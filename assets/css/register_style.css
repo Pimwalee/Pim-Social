@@ -1,0 +1,96 @@
+@font-face {
+    font-family:'Oswald-Regular';
+    src: url('../fonts/Oswald-Regular.ttf');
+}
+@font-face {
+    font-family:'Oswald-Bold';
+    src: url('../fonts/Oswald-Bold.ttf');
+}
+@font-face {
+    font-family:'Sofia-Regular';
+    src: url('../fonts/Sofia-Regular.otf');
+}
+html,body {
+    height: 100%;
+    min-height:100%;
+}
+form {
+    text-align: center;
+    color: #000000;
+}
+body {
+    margin: 0;
+    padding: 0;
+}
+a {
+    text-decoration: none;
+    color: #000000;
+}
+.wrapper {
+    background-image: url("../images/backgrounds/white_desk.jpg");
+    background-size: 100%;
+    width:100%;
+    height: 100%;
+    min-width: 950px;
+}
+.login_box {
+    font-family: 'Oswald-regular', sans-serif;
+    position: relative;
+    margin-right: auto;
+    margin-left: auto;
+    top: 30%;
+    width: 30%;
+    background-color: #47464663;
+    border:1px solid #818080;
+    border-radius: 10px;
+    padding: 10px;
+    opacity: 0.70;
+}
+.login_header {
+    font-family: 'Oswald-regular', sans-serif;
+    width: 100%;
+    height: 90px;
+    background-color: #706f6fa4;
+    color: #000000;
+    text-align: center;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    margin-right: auto;
+    margin-left: auto;
+}
+.login_header h1 {
+    font-family: 'Sofia-Regular', sans-serif;
+    margin-top: 0;
+    margin-bottom: 0;
+    color:#000000;
+    text-shadow: #c6c6c6 2px 2px 0px;
+    font-size: 250%;
+
+}
+input[type="submit"] {
+    background-color: #6a6868bf;
+    padding: 5px 10px 5px 10px;
+    border-radius: 5px;
+    border:1px solid #6a6868bf ;
+    margin: 5px 0 10px 0;
+    color:#000000;
+    text-shadow: #dadadaf1 0.2px 0.7px 1px;
+    font-family: 'Oswald-regular', sans-serif;
+    font-size: 110%;
+}
+input[type="text"],input[type="email"],input[type="password"] {
+    border:1px solid #6a6868;
+    margin-top: 5px;
+    width: 70%;
+    height: 30px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    padding-left: 10px;
+}
+input[type="text"]:hover, input[type="email"]:hover, input[type="password"]:hover {
+    border-color:#ffffff;
+}
+#second {
+    display:none;
+}
+
