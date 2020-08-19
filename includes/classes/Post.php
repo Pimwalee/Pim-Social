@@ -23,9 +23,9 @@ class Post {
             //Get username
             $added_by = $this->user_obj->getUsername();
 
-            //If user is not on own profile,user_to is 'none'   
-            if($user_to== $added_by) { //this allow users to send a post to someone else's profile
-                $user_to == "none"; //none cos it is from our page
+            //If user is on own profile,user_to is 'none'   
+            if($user_to == $added_by) { 
+                $user_to = "none"; //none cos it is from our own page
             }
 
             //Insert post
@@ -106,6 +106,11 @@ public function loadPostsFriends($data, $limit) {
                     else {
                         $count++;
                     }
+
+                    if($userLoggedIn == $added_by)
+                        $delete_button = "<button class='delete_button' id='post$id'>X</button>";
+                    else 
+                        $delete_button = "";
 
                     $user_details_query = $this->con->query("SELECT first_name, last_name, profile_pic FROM users WHERE username='$added_by'");
                     $user_row = $user_details_query->fetch(PDO::FETCH_BOTH);
@@ -207,6 +212,7 @@ public function loadPostsFriends($data, $limit) {
                                 
                                 <div class='posted_by' style='color:#9c9c9c;'>
                                     <a href='$added_by'> $first_name $last_name </a> $user_to &nbsp;&nbsp;&nbsp;&nbsp;$time_message
+                                    $delete_button
                                 </div>
                                 <div id='post_body'>
                                     $body
@@ -224,7 +230,27 @@ public function loadPostsFriends($data, $limit) {
 								<iframe src='comment_frame.php?post_id=$id' id='comment_iframe' frameborder='0'></iframe>
 							</div>
 							<hr>";
-                }    
+                }
+                ?>
+                <script>
+
+                    $(document).ready(function() {
+                        
+                        $('#post<?php echo $id; ?>').on('click', function(){
+                            bootbox.confirm("Are you sure you want to delete this post?", function(result) {
+
+                                $.post("includes/form_handlers/delete_post.php?post_id=<?php echo $id; ?>", {result:result});// sending the result to this page
+
+                                if(result)
+                                location.reload();
+                            });
+                        });
+                    });
+
+                </script>
+                <?php
+                
+
             }//the end of while loop
 
             if($count > $limit) //if there will be only 6 posts left stop!  cos there's no more left

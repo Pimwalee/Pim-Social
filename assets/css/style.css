@@ -303,3 +303,13 @@ background-color: #949494;
 #ignore_button:hover {
     background-color: #dfdfdf;
     }
+.delete_button {
+    height: 22px;
+    width: 22px;
+    padding:0 0 24 0;
+    float: right;
+    border-radius: 6px;
+    right: -20px;
+    position: relative;
+    background-color: #d0d0d0;
+    }

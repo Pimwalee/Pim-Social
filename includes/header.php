@@ -21,6 +21,8 @@ else {
     <!-- JS -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="assets/js/bootstrap.js"> </script>
+    <script src="assets/js/bootbox.min.js"></script>
+    <script src="assets/js/pimcial.js"> </script>
     
     <!-- CSS -->
     <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
