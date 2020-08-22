@@ -312,4 +312,13 @@ background-color: #949494;
     right: -20px;
     position: relative;
     background-color: #d0d0d0;
-    }
+}
+.profile_main_column {
+    min-width: 675px;
+    float: left;
+    width: 70%;
+    z-index: -1;
+}
+.profile_info_buttom {
+    margin-top: 10 0 0 10px;
+}

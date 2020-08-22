@@ -52,216 +52,409 @@ class Post {
         }
     }
 
-public function loadPostsFriends($data, $limit) { 
+    public function loadPostsFriends($data, $limit) { 
 
-    $page = $data['page'];
-    $userLoggedIn = $this->user_obj->getUsername();
+        $page = $data['page']; // $_REQUEST in ajax_load_posts from ajax data in index.php
+        $userLoggedIn = $this->user_obj->getUsername();
 
-    if($page == 1)
-        $start = 0;
-    else
-        $start = ($page -1) * $limit; //limit = 10
+        if($page == 1)
+            $start = 0;
+        else
+            $start = ($page -1) * $limit; //limit = 10
 
-    $str = ""; //String to return
-    $data_query = $this->con->query("SELECT * FROM posts WHERE deleted='no' ORDER BY id DESC");
+        $str = ""; //String to return
+        $data_query = $this->con->query("SELECT * FROM posts WHERE deleted='no' ORDER BY id DESC");
 
-    if($data_query->rowCount() > 0){
-    
+        if($data_query->rowCount() > 0){
+        
 
-            $num_iteration = 0; //count how many times the loop been round// Number of result cheked
-            $count = 1;
-    
-            while($row = $data_query->fetch(PDO::FETCH_BOTH)) {
-                $id = $row['id'];
-                $body = $row['body'];
-                $added_by = $row['added_by'];
-                $date_time = $row['date_added'];
+                $num_iteration = 0; //count how many times the loop been round// Number of result cheked
+                $count = 1;
+        
+                while($row = $data_query->fetch(PDO::FETCH_BOTH)) {
+                    $id = $row['id'];
+                    $body = $row['body'];
+                    $added_by = $row['added_by'];
+                    $date_time = $row['date_added'];
 
-                //Prepare user_to string so it can be included even if not posted to a user
-                if($row['user_to'] == "none") {
-                    $user_to = "";
-                }
-                else {
-                    $user_to_obj = new User($this->con, $row['user_to']);
-                    $user_to_name = $user_to_obj->getFirstAndLastName();
-                    $user_to = "to <a href='". $row['user_to'] . "'>" . $user_to_name . "</a>"; // will say "to..(and the link to the person)"
-                }
-                //Check if user posted has their account closed
-                $added_by_obj = new User($this->con, $added_by);
-                if($added_by_obj->isClosed()) {
-                    continue;
-                }
-                //only show posts friends //if true do below if false will go around again
-                $user_logged_obj = new User($this->con, $userLoggedIn);
-                if($user_logged_obj->isFriend($added_by)){
-
-
-                    if($num_iteration++ < $start) //if less than start(0) go back and do another iteration
-                    continue;
-
-                    //Once 10 posts have been loaded, break
-                    if($count > $limit){
-                    break; // leave the loop
+                    //Prepare user_to string so it can be included even if not posted to a user
+                    if($row['user_to'] == "none") {
+                        $user_to = "";
                     }
                     else {
-                        $count++;
+                        $user_to_obj = new User($this->con, $row['user_to']);
+                        $user_to_name = $user_to_obj->getFirstAndLastName();
+                        $user_to = "to <a href='". $row['user_to'] . "'>" . $user_to_name . "</a>"; // will say "to..(and the link to the person)"
                     }
-
-                    if($userLoggedIn == $added_by)
-                        $delete_button = "<button class='delete_button' id='post$id'>X</button>";
-                    else 
-                        $delete_button = "";
-
-                    $user_details_query = $this->con->query("SELECT first_name, last_name, profile_pic FROM users WHERE username='$added_by'");
-                    $user_row = $user_details_query->fetch(PDO::FETCH_BOTH);
-                    $first_name = $user_row['first_name'];
-                    $last_name = $user_row['last_name'];
-                    $profile_pic = $user_row['profile_pic'];
+                    //Check if user posted has their account closed
+                    $added_by_obj = new User($this->con, $added_by);
+                    if($added_by_obj->isClosed()) {
+                        continue;
+                    }
+                    //only show posts friends //if true do below if false will go around again
+                    $user_logged_obj = new User($this->con, $userLoggedIn);
+                    if($user_logged_obj->isFriend($added_by)){
 
 
-                    ?>
-                    <script>
-                        function toggle<?php echo $id; ?>() {
+                        if($num_iteration++ < $start) //if less than start(0) go back and do another iteration
+                        continue;
 
-                            var target = $(event.target);
-                            if(!target.is("a")) { //if click on "a" link don't show the comment frame
-                                var element = document.getElementById("toggleComment<?php echo $id; ?>");
+                        //Once 10 posts have been loaded, break
+                        if($count > $limit){
+                        break; // leave the loop
+                        }
+                        else {
+                            $count++;
+                        }
 
-                                if(element.style.display == "block") {//if comment is showing 
-                                    element.style.display = "none";//hide it
-                                } else {
-                                element.style.display = "block";//if comment is hidden show it
+                        if($userLoggedIn == $added_by)
+                            $delete_button = "<button class='delete_button' id='post$id'>X</button>";
+                        else 
+                            $delete_button = "";
+
+                        $user_details_query = $this->con->query("SELECT first_name, last_name, profile_pic FROM users WHERE username='$added_by'");
+                        $user_row = $user_details_query->fetch(PDO::FETCH_BOTH);
+                        $first_name = $user_row['first_name'];
+                        $last_name = $user_row['last_name'];
+                        $profile_pic = $user_row['profile_pic'];
+
+
+                        ?>
+                        <script>
+                            function toggle<?php echo $id; ?>() {
+
+                                var target = $(event.target);
+                                if(!target.is("a")) { //if click on "a" link don't show the comment frame
+                                    var element = document.getElementById("toggleComment<?php echo $id; ?>");
+
+                                    if(element.style.display == "block") {//if comment is showing 
+                                        element.style.display = "none";//hide it
+                                    } else {
+                                    element.style.display = "block";//if comment is hidden show it
+                                    }
+                                    
                                 }
-                                
+                            }
+
+                        </script>
+                        <?php
+                        //Count comments
+                        $comments_check = $this->con->query("SELECT * FROM comments WHERE post_id='$id'");
+                        $comments_check_num = $comments_check->rowCount();
+
+                        //Timeframe
+                        $date_time_now = date("Y-m-d H:i:s");
+                        $start_date = new DateTime($date_time); //Time of post
+                        $end_date = new DateTime($date_time_now); //Current time
+                        $interval = $start_date->diff($end_date); //Different between dates
+                        if($interval->y >=1) { //one year or over
+                            if($interval == 1)
+                                $time_message = $interval->y . " year ago"; // one year ago
+                                else
+                                $time_message = $interval->y . " years ago"; // one+ year ago
+                        }
+                        else if ($interval->m >= 1){// one month or more
+                            if($interval->d == 0) {
+                                $days = " ago";
+                            }
+                            else if($interval->d == 1) {
+                                $days = $interval->d . " day ago";
+                            }
+                            else {
+                                $days = $interval->d . " days ago";
+                            }
+
+                            if($interval->m == 1) {
+                                $time_message = $interval->m . " month" . $days;
+                            }
+                            else {
+                                $time_message = $interval->m . " months" . $days;
+                            }
+
+                        }
+                        else if($interval->d >= 1) { // more than one day
+                            if($interval->d == 1) {
+                                $time_message = "Yesterday";
+                            }
+                            else{
+                                $time_message = $interval->d . " days ago";
                             }
                         }
+                        else if($interval->h >=1) {
+                            if($interval->h == 1) {
+                                $time_message = $interval->h . " hour ago";
+                            }
+                            else {
+                                $time_message = $interval->h . " hours ago";
+                            }
+                        }
+                        else if($interval->i >=1) {
+                            if($interval->i == 1) {
+                                $time_message = $interval->i . " minute ago";
+                            }
+                            else {
+                                $time_message = $interval->i . " minutes ago";
+                            }
+                        }
+                        else {
+                            if($interval->s < 30) {
+                                $time_message ="Just now";
+                            }
+                            else {
+                                $time_message = $interval->s . " seconds ago";
+                            }
+                        }
+                        
+                        $str .= "<div class='status_post' onClick='javascript:toggle$id()'>
+                                    <div class='post_profile_pic'>
+                                        <img src='$profile_pic' width='50'>
+                                    </div>   
+                                    
+                                    <div class='posted_by' style='color:#9c9c9c;'>
+                                        <a href='$added_by'> $first_name $last_name </a> $user_to &nbsp;&nbsp;&nbsp;&nbsp;$time_message
+                                        $delete_button
+                                    </div>
+                                    <div id='post_body'>
+                                        $body
+                                        <br>
+                                        <br>
+                                    </div>
+
+                                        <div class='newsfeedPostOptions'>
+                                            Comments($comments_check_num)&nbsp;&nbsp;&nbsp;
+                                            <iframe src='like.php?post_id=$id' scrolling='no'></iframe>
+                                        </div>
+
+                                </div>
+                                <div class='post_comment' id='toggleComment$id' style='display:none;'>
+                                    <iframe src='comment_frame.php?post_id=$id' id='comment_iframe' frameborder='0'></iframe>
+                                </div>
+                                <hr>";
+                    }
+                    ?>
+                    <script>
+
+                        $(document).ready(function() {
+                            
+                            $('#post<?php echo $id; ?>').on('click', function(){
+                                bootbox.confirm("Are you sure you want to delete this post?", function(result) {
+
+                                    $.post("includes/form_handlers/delete_post.php?post_id=<?php echo $id; ?>", {result:result});// sending the result to this page
+
+                                    if(result)
+                                    location.reload();
+                                });
+                            });
+                        });
 
                     </script>
                     <?php
-                    //Count comments
-                    $comments_check = $this->con->query("SELECT * FROM comments WHERE post_id='$id'");
-                    $comments_check_num = $comments_check->rowCount();
-
-                    //Timeframe
-                    $date_time_now = date("Y-m-d H:i:s");
-                    $start_date = new DateTime($date_time); //Time of post
-                    $end_date = new DateTime($date_time_now); //Current time
-                    $interval = $start_date->diff($end_date); //Different between dates
-                    if($interval->y >=1) { //one year or over
-                        if($interval == 1)
-                            $time_message = $interval->y . " year ago"; // one year ago
-                            else
-                            $time_message = $interval->y . " years ago"; // one+ year ago
-                    }
-                    else if ($interval->m >= 1){// one month or more
-                        if($interval->d == 0) {
-                            $days = " ago";
-                        }
-                        else if($interval->d == 1) {
-                            $days = $interval->d . " day ago";
-                        }
-                        else {
-                            $days = $interval->d . " days ago";
-                        }
-
-                        if($interval->m == 1) {
-                            $time_message = $interval->m . " month" . $days;
-                        }
-                        else {
-                            $time_message = $interval->m . " months" . $days;
-                        }
-
-                    }
-                    else if($interval->d >= 1) { // more than one day
-                        if($interval->d == 1) {
-                            $time_message = "Yesterday";
-                        }
-                        else{
-                            $time_message = $interval->d . " days ago";
-                        }
-                    }
-                    else if($interval->h >=1) {
-                        if($interval->h == 1) {
-                            $time_message = $interval->h . " hour ago";
-                        }
-                        else {
-                            $time_message = $interval->h . " hours ago";
-                        }
-                    }
-                    else if($interval->i >=1) {
-                        if($interval->i == 1) {
-                            $time_message = $interval->i . " minute ago";
-                        }
-                        else {
-                            $time_message = $interval->i . " minutes ago";
-                        }
-                    }
-                    else {
-                        if($interval->s < 30) {
-                            $time_message ="Just now";
-                        }
-                        else {
-                            $time_message = $interval->s . " seconds ago";
-                        }
-                    }
                     
-                    $str .= "<div class='status_post' onClick='javascript:toggle$id()'>
-                                <div class='post_profile_pic'>
-                                    <img src='$profile_pic' width='50'>
-                                </div>   
-                                
-                                <div class='posted_by' style='color:#9c9c9c;'>
-                                    <a href='$added_by'> $first_name $last_name </a> $user_to &nbsp;&nbsp;&nbsp;&nbsp;$time_message
-                                    $delete_button
-                                </div>
-                                <div id='post_body'>
-                                    $body
-                                    <br>
-                                    <br>
-                                </div>
 
-                                    <div class='newsfeedPostOptions'>
-                                        Comments($comments_check_num)&nbsp;&nbsp;&nbsp;
-                                        <iframe src='like.php?post_id=$id' scrolling='no'></iframe>
+                }//the end of while loop
+
+                if($count > $limit) //if there will be only 6 posts left stop!  cos there's no more left
+                    $str .= "<input type='hidden' class='nextPage' value='" . ($page +1) . "'>
+                            <input type='hidden' class='noMorePosts' value='false'>";
+                else
+                $str .= "<input type='hidden' class='noMorePosts' value='true'><p style='text-align: centre;'> No more posts to show!</p>"; 
+            }
+            echo $str;
+
+    }
+
+    public function loadProfilePosts($data, $limit) { 
+
+        $page = $data['page'];
+        $profileUsername = $data['profileUsername']; /* $data['profileUsername'] comes from $_REQUEST in ajax_load_profile_posts.php that comes from ajax data: in profile.php and we can access it by using $_REQUEST['whatever word we use in data'] */
+        $userLoggedIn = $this->user_obj->getUsername();
+
+        if($page == 1)
+            $start = 0;
+        else
+            $start = ($page -1) * $limit; //limit = 10
+
+        $str = ""; //String to return
+        $data_query = $this->con->query("SELECT * FROM posts WHERE deleted='no' AND ((added_by='$profileUsername' AND user_to='none') OR user_to='$profileUsername') ORDER BY id DESC"); // Pim walee goes to Justin's profile to make a post so user_to need to be Justin anyway, so we don't have to show that Pim walee TO Justin.
+
+        if($data_query->rowCount() > 0){
+        
+
+                $num_iteration = 0; //count how many times the loop been round// Number of result cheked
+                $count = 1;
+        
+                while($row = $data_query->fetch(PDO::FETCH_BOTH)) {
+                    $id = $row['id'];
+                    $body = $row['body'];
+                    $added_by = $row['added_by'];
+                    $date_time = $row['date_added'];
+
+
+                        if($num_iteration++ < $start) //if less than start(0) go back and do another iteration
+                        continue;
+
+                        //Once 10 posts have been loaded, break
+                        if($count > $limit){
+                        break; // leave the loop
+                        }
+                        else {
+                            $count++;
+                        }
+
+                        if($userLoggedIn == $added_by)
+                            $delete_button = "<button class='delete_button' id='post$id'>X</button>";
+                        else 
+                            $delete_button = "";
+
+                        $user_details_query = $this->con->query("SELECT first_name, last_name, profile_pic FROM users WHERE username='$added_by'");
+                        $user_row = $user_details_query->fetch(PDO::FETCH_BOTH);
+                        $first_name = $user_row['first_name'];
+                        $last_name = $user_row['last_name'];
+                        $profile_pic = $user_row['profile_pic'];
+
+
+                        ?>
+                        <script>
+                            function toggle<?php echo $id; ?>() {
+
+                                var target = $(event.target);
+                                if(!target.is("a")) { //if click on "a" link don't show the comment frame
+                                    var element = document.getElementById("toggleComment<?php echo $id; ?>");
+
+                                    if(element.style.display == "block") {//if comment is showing 
+                                        element.style.display = "none";//hide it
+                                    } else {
+                                    element.style.display = "block";//if comment is hidden show it
+                                    }
+                                    
+                                }
+                            }
+
+                        </script>
+                        <?php
+                        //Count comments
+                        $comments_check = $this->con->query("SELECT * FROM comments WHERE post_id='$id'");
+                        $comments_check_num = $comments_check->rowCount();
+
+                        //Timeframe
+                        $date_time_now = date("Y-m-d H:i:s");
+                        $start_date = new DateTime($date_time); //Time of post
+                        $end_date = new DateTime($date_time_now); //Current time
+                        $interval = $start_date->diff($end_date); //Different between dates
+                        if($interval->y >=1) { //one year or over
+                            if($interval == 1)
+                                $time_message = $interval->y . " year ago"; // one year ago
+                                else
+                                $time_message = $interval->y . " years ago"; // one+ year ago
+                        }
+                        else if ($interval->m >= 1){// one month or more
+                            if($interval->d == 0) {
+                                $days = " ago";
+                            }
+                            else if($interval->d == 1) {
+                                $days = $interval->d . " day ago";
+                            }
+                            else {
+                                $days = $interval->d . " days ago";
+                            }
+
+                            if($interval->m == 1) {
+                                $time_message = $interval->m . " month" . $days;
+                            }
+                            else {
+                                $time_message = $interval->m . " months" . $days;
+                            }
+
+                        }
+                        else if($interval->d >= 1) { // more than one day
+                            if($interval->d == 1) {
+                                $time_message = "Yesterday";
+                            }
+                            else{
+                                $time_message = $interval->d . " days ago";
+                            }
+                        }
+                        else if($interval->h >=1) {
+                            if($interval->h == 1) {
+                                $time_message = $interval->h . " hour ago";
+                            }
+                            else {
+                                $time_message = $interval->h . " hours ago";
+                            }
+                        }
+                        else if($interval->i >=1) {
+                            if($interval->i == 1) {
+                                $time_message = $interval->i . " minute ago";
+                            }
+                            else {
+                                $time_message = $interval->i . " minutes ago";
+                            }
+                        }
+                        else {
+                            if($interval->s < 30) {
+                                $time_message ="Just now";
+                            }
+                            else {
+                                $time_message = $interval->s . " seconds ago";
+                            }
+                        }
+                        
+                        $str .= "<div class='status_post' onClick='javascript:toggle$id()'>
+                                    <div class='post_profile_pic'>
+                                        <img src='$profile_pic' width='50'>
+                                    </div>   
+                                    
+                                    <div class='posted_by' style='color:#9c9c9c;'>
+                                        <a href='$added_by'> $first_name $last_name </a>  &nbsp;&nbsp;&nbsp;&nbsp;$time_message
+                                        $delete_button
+                                    </div>
+                                    <div id='post_body'>
+                                        $body
+                                        <br>
+                                        <br>
                                     </div>
 
-                            </div>
-							<div class='post_comment' id='toggleComment$id' style='display:none;'>
-								<iframe src='comment_frame.php?post_id=$id' id='comment_iframe' frameborder='0'></iframe>
-							</div>
-							<hr>";
-                }
-                ?>
-                <script>
+                                        <div class='newsfeedPostOptions'>
+                                            Comments($comments_check_num)&nbsp;&nbsp;&nbsp;
+                                            <iframe src='like.php?post_id=$id' scrolling='no'></iframe>
+                                        </div>
 
-                    $(document).ready(function() {
-                        
-                        $('#post<?php echo $id; ?>').on('click', function(){
-                            bootbox.confirm("Are you sure you want to delete this post?", function(result) {
+                                </div>
+                                <div class='post_comment' id='toggleComment$id' style='display:none;'>
+                                    <iframe src='comment_frame.php?post_id=$id' id='comment_iframe' frameborder='0'></iframe>
+                                </div>
+                                <hr>";
+                    ?>
+                    <script>
 
-                                $.post("includes/form_handlers/delete_post.php?post_id=<?php echo $id; ?>", {result:result});// sending the result to this page
+                        $(document).ready(function() {
+                            
+                            $('#post<?php echo $id; ?>').on('click', function(){
+                                bootbox.confirm("Are you sure you want to delete this post?", function(result) {
 
-                                if(result)
-                                location.reload();
+                                    $.post("includes/form_handlers/delete_post.php?post_id=<?php echo $id; ?>", {result:result});// sending the result to this page
+
+                                    if(result)
+                                    location.reload();
+                                });
                             });
                         });
-                    });
 
-                </script>
-                <?php
-                
+                    </script>
+                    <?php
+                    
 
-            }//the end of while loop
+                }//the end of while loop
 
-            if($count > $limit) //if there will be only 6 posts left stop!  cos there's no more left
-                $str .= "<input type='hidden' class='nextPage' value='" . ($page +1) . "'>
-                        <input type='hidden' class='noMorePosts' value='false'>";
-            else
-            $str .= "<input type='hidden' class='noMorePosts' value='true'><p style='text-align: centre;'> No more posts to show!</p>"; 
-        }
-         echo $str;
+                if($count > $limit) //if there will be only 6 posts left stop!  cos there's no more left
+                    $str .= "<input type='hidden' class='nextPage' value='" . ($page +1) . "'>
+                            <input type='hidden' class='noMorePosts' value='false'>";
+                else
+                $str .= "<input type='hidden' class='noMorePosts' value='true'><p style='text-align: centre;'> No more posts to show!</p>"; 
+            }
+            echo $str;
 
-}
+    }
 
 }
 
