@@ -23,11 +23,16 @@ else {
     <script src="assets/js/bootstrap.js"> </script>
     <script src="assets/js/bootbox/bootbox.min.js"></script>
     <script src="assets/js/pimcial.js"> </script>
+	<script src="assets/js/jquery.Jcrop.js"></script>
+    <script src="assets/js/jcrop_bits.js"></script>
+    
     
     <!-- CSS -->
     <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="assets/css/bootstrap.css">
     <link rel="stylesheet" type="text/css" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/jquery.Jcrop.css" type="text/css" />
+
 
 </head>
 <body>
@@ -44,7 +49,7 @@ else {
                 <a href="#"><i class="fa fa-envelope"></i></a>
                 <a href="#"><i class="fa fa-bell"></i></a>
                 <a href="requests.php"><i class="fa fa-users"></i></a>
-                <a href="#"><i class="fa fa-cog"></i></a>
+                <a href="upload.php"><i class="fa fa-cog"></i></a>
                 <a href="includes/handlers/logout.php"><i class="fa fa-sign-out"></i></a>
             </nav>
     </div>

@@ -65,16 +65,25 @@ if(isset($_POST['respond_request'])) {
             }
 
             ?>
-            
-
         </form>
 
         <input type="submit" class="deep_gray" data-toggle="modal" data-target="#post_form" value="Post Something">
 
+        <?php
+        if($userLoggedIn != $username) { //if we are not on our profile echo this
+            echo '<div class="profile_info_bottom">';
+                echo $logged_in_user_obj->getMutualFriend($username) . " Mutual friends";
+                echo '</div>';
+        }
+
+        ?>
+
     </div>
 
-    <div class="main_column column">
-        <?php echo "This is " . $username . " profile!";?>
+    <div class="profile_main_column column">
+        <!-- <?php echo "This is " . $username . " profile!";?> -->
+        <div class="posts_area"></div>
+        <img id="loading" src="assets/images/icons/Loading_icon.gif">
     </div>
 
 <!-- Modal -->
@@ -108,6 +117,61 @@ if(isset($_POST['respond_request'])) {
     </div>
   </div>
 </div>
+
+
+<script>
+    var userLoggedIn = '<?php echo $userLoggedIn?>';
+    var profileUsername = '<?php echo $username; ?>';
+
+    $(document).ready(function() {
+
+        $('#loading').show();
+
+        //Original ajax request for loading first posts call 
+        $.ajax({
+            url:"includes/handlers/ajax_load_profile_posts.php", //the file to send it to
+            type: "POST",
+            data: "page=1&userLoggedIn=" + userLoggedIn + "&profileUsername=" + profileUsername,//page=1 cos it's the first call //what should send to the page
+            cache:false,
+
+            success: function(data) { //do this function after returns from the call function
+                $('#loading').hide(); //return with post but hide the sign
+                $('.posts_area').html(data);
+            }
+        });
+
+        $(window).scroll(function() { //to find out if it is at the bottom of the page or not
+            var height = $('.posts_area').height(); //Div containing posts
+            var scroll_top = $(this).scrollTop(); //Contain the top of the page where you are loaded
+            var page = $('.posts_area').find('.nextPage').val();
+            var noMorePosts = $('.posts_area').find('.noMorePosts').val();
+
+            if((document.body.scrollHeight == document.body.scrollTop + window.innerHeight) && noMorePosts == 'false') {
+                $('#loading').show();
+
+                var ajaxReq = $.ajax({
+                    url:"includes/handlers/ajax_load_profile_posts.php",
+                    type: "POST",
+                    data: "page=" + page + "&userLoggedIn=" + userLoggedIn + "&profileUsername=" + profileUsername,
+                    cache:false,
+
+                    success: function(response) {
+                        $('.posts_area').find('.nextPage').remove();//Remove current .nextpage
+                        $('.posts_area').find('.noMorePosts').remove();
+
+                        $('#loading').hide();
+                        $('.posts_area').append(response); // add the new post to the existing post
+                    }
+                 });
+
+            }//End if
+            return false;
+        }); //End $(window).scroll(function()
+
+    });
+
+    </script>
+
 
     </div> 
 </body>

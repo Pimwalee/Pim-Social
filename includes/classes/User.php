@@ -10,7 +10,7 @@ class User {
     }
 
     public function getUsername(){
-        return $this->user['username'];
+        return $this->user['username']; // $this->user containing all the information about the users (the column from the table)
     }
 
     public function getNumPosts() {
@@ -105,9 +105,32 @@ class User {
         $query = $this->con->query("INSERT INTO friend_requests VALUES(NULL,'$user_to','$user_from')");
     }
 
+    public function getMutualFriend($user_to_check) {
+        $mutualFriend = 0;
+        $user_array = $this->user['friend_array'];
+        $user_array_explode = explode(",",$user_array);
+        //when we see comma , split it to an array
+        //(userLoggedIn's friend_array)
+        
+        $query = $this->con->query("SELECT friend_array FROM users WHERE username='$user_to_check'");
+        $row = $query->fetch(PDO::FETCH_BOTH);
+        $user_to_check_array = $row['friend_array'];
+        $user_to_check_array_explode = explode(",",$user_to_check_array);
 
+        foreach($user_array_explode as $i) {
+                // i contains the value of (userLoggedIn's friend_array)element
 
-
+            foreach($user_to_check_array_explode as $j) {
+                    // j is further loop on userLoggedIn's friend_array's friend_array to check if they match
+                    //check against every single element array
+                    
+                if($i == $j && $i != "") { 
+                    $mutualFriend++;
+                }
+            }
+        }
+        return $mutualFriend;
+    }
 
 
 
