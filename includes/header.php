@@ -2,6 +2,8 @@
 require 'config/config.php';
 include("includes/classes/User.php");
 include("includes/classes/Post.php");
+include("includes/classes/Message.php");
+
 
 if (isset($_SESSION['username'])) {
     $userLoggedIn = $_SESSION['username'];
@@ -23,7 +25,7 @@ else {
     <script src="assets/js/bootstrap.js"> </script>
     <script src="assets/js/bootbox/bootbox.min.js"></script>
     <script src="assets/js/pimcial.js"> </script>
-	<script src="assets/js/jquery.Jcrop.js"></script>
+    <script src="assets/js/jquery.Jcrop.js"></script>
     <script src="assets/js/jcrop_bits.js"></script>
     
     
@@ -46,7 +48,7 @@ else {
             <nav>
                 <a href="<?php echo $userLoggedIn; ?>"><?php echo $user['first_name']?></i></a>
                 <a href="index.php"><i class="fa fa-home"></i></a>
-                <a href="#"><i class="fa fa-envelope"></i></a>
+                <a href="messages.php"><i class="fa fa-envelope"></i></a>
                 <a href="#"><i class="fa fa-bell"></i></a>
                 <a href="requests.php"><i class="fa fa-users"></i></a>
                 <a href="upload.php"><i class="fa fa-cog"></i></a>
