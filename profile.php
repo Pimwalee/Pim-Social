@@ -81,7 +81,16 @@ if(isset($_POST['respond_request'])) {
     </div>
 
     <div class="profile_main_column column">
-        <!-- <?php echo "This is " . $username . " profile!";?> -->
+
+     <!--STOPPED here to learn more about current version of boostrap-->
+
+    <!-- <ul class="nav nav-tabs">
+        <li role="presentation" class="active"><a href="#">Home</a></li>
+        <li role="presentation"><a href="#">Profile</a></li>
+        <li role="presentation"><a href="#">Messages</a></li>
+    </ul> -->
+
+
         <div class="posts_area"></div>
         <img id="loading" src="assets/images/icons/Loading_icon.gif">
     </div>
