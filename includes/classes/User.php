@@ -13,6 +13,12 @@ class User {
         return $this->user['username']; // $this->user containing all the information about the users (the column from the table)
     }
 
+    public function getNumberOfFriendRequests(){
+        $username = $this->user['username'];
+        $query = $this->con->query("SELECT * FROM friend_requests WHERE user_to='$username'");
+        return $query->rowCount();
+    }
+
     public function getNumPosts() {
         $username = $this->user['username'];
         $query = $this->con->query("SELECT num_posts FROM users WHERE username='$username'");
@@ -123,7 +129,7 @@ class User {
             foreach($user_to_check_array_explode as $j) {
                     // j is further loop on userLoggedIn's friend_array's friend_array to check if they match
                     //check against every single element array
-                    
+
                 if($i == $j && $i != "") { 
                     $mutualFriend++;
                 }

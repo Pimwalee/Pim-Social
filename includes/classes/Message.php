@@ -178,6 +178,78 @@ class Message {
         }
         return $return_string;
     }
+
+    public function getConvosDropdown($data, $limit) {
+        $page = $data['page'];// from ajax
+        $userLoggedIn = $this->user_obj->getUsername();
+        $return_string = "";
+        $convos = array();
+
+        if($page == 1)
+            $start = 0;
+        else
+            $start = ($page - 1) * $limit;
+
+        $set_viewed_query = $this->con->query("UPDATE messages SET viewed='yes' WHERE user_to='$userLoggedIn'");
+
+        $query = $this->con->query("SELECT user_to, user_from FROM messages WHERE user_to='$userLoggedIn' OR user_from='$userLoggedIn' ORDER BY id DESC");
+
+        while($row = $query->fetch(PDO::FETCH_BOTH)) {
+            $user_to_push = ($row['user_to'] != $userLoggedIn) ? $row['user_to'] : $row['user_from'];
+            if(!in_array($user_to_push, $convos)) { 
+                array_push($convos, $user_to_push);
+            }
+        } 
+
+        $num_iterations = 0; //Number of message checked
+        $count = 1; //Number of messages posted
+
+        foreach($convos as $username) {
+            if($num_iterations++ < $start)
+            continue;
+
+            if($count > $limit)
+                break;
+            else
+            $count++;
+
+            $is_unread_query = $this->con->query("SELECT opened FROM messages WHERE user_to='$userLoggedIn' AND user_from='$username' ORDER BY id DESC");
+            $row = $is_unread_query->fetch(PDO::FETCH_BOTH);
+            $style = (isset($row['opened']) && $row['opened'] == 'no') ? "background-color: #D3D3D3;" : "";
+
+            $user_found_obj = new User($this->con, $username);
+            $lastest_message_detail = $this->getLastestMessage($userLoggedIn, $username);
+
+            $dots = (strlen($lastest_message_detail[1]) >= 12) ? "..." : "";
+            $split = str_split($lastest_message_detail[1], 12);
+            $split = $split[0] . $dots; 
+
+            $return_string .= "<a href='messages.php?u=$username'>
+                            <div class='user_found_messages' style='" . $style . "'>
+                            <img src='" . $user_found_obj->getProfilePic() . "' style='border-radius: 5px; margin-right:15px;'>
+                            " . $user_found_obj->getFirstAndLastName() . " 
+                            <span class='timestamp_smaller' id='gray'> " . $lastest_message_detail[2] . "</span>
+                            <p id='gray' style='margin: 0;'>" . $lastest_message_detail[0] . $split . " </p>
+                            </div>
+                            </a>";
+        }
+
+        //if posts were loaded
+        if($count > $limit)
+        //This  return string that tells us whether we need to load more posts or not (limit is 7 from ajax_load_messages)
+        $return_string .= "<input type='hidden' class='nextPageDropdownData' value='" . ($page + 1) . "'><input type='hidden' class='noMoreDropdownData' value='false'>";
+        else
+        $return_string .= "<input type='hidden' class='noMoreDropdownData' value='true'> <p style='text-align: center; font-size:13px;'>No more messages to load!</p>";
+        return $return_string;
+    }
+
+    public function getUnreadNumber() {
+        $userLoggedIn = $this->user_obj->getUsername();
+        $query = $this->con->query("SELECT * FROM messages WHERE viewed='no' AND user_to='$userLoggedIn'");
+        return $query->rowCount();
+
+    }
+
 }
 
 ?>
