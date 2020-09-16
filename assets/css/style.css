@@ -40,7 +40,7 @@ a:hover {
     font-size: 36px;
     position: relative;
     top: 9px;
-    color: #333333;
+    color: #212121;
     text-shadow: #c6c6c6 2px 2px 0px;
 }
 .logo a:hover {
@@ -55,7 +55,7 @@ nav{
 }
 nav a{
     position: relative;
-    color: #333333;
+    color: #212121;
     text-decoration: none;
     font-size: 28px;
     padding: 2px;
@@ -250,7 +250,7 @@ textarea:focus {
     padding: 10px 0 10px 0;
 }
 .profile_info p{
-    margin: 10px 50px 10px;
+    margin: 10px 35px 10px;
     overflow-wrap: break-word;
     text-align: left;
 }
@@ -390,15 +390,15 @@ background-color: #949494;
 }
 .user_found_messages {
     border-bottom: 1px solid #aaaaaa;
-    padding: 15px 8px 15px 8px;
-    font-size: 14px;
+    padding: 8px 8px 8px 8px;
+    font-size: 13px
 }
 .user_found_messages:hover {
     background-color: #dddddd;
     color: #000000;
 }
 .user_found_messages img {
-    height: 60px;
+    height: 50px;
     float: left;
 }
 #gray {
@@ -429,4 +429,92 @@ background-color: #949494;
 .liveSearchText p{
     margin-left: 10px;
     font-size: 12px;
+}
+.tab-content {
+    margin-top: 25px;
+}
+.dropdown_data_window{
+    background-color: #fff;
+    border: 1px solid #d3d3d3;
+    border-radius: 0 0 8px 8px;
+    width: 300px;
+    border-top: none;
+    position: absolute;
+    right: 10px;
+    top: 40px;
+    overflow: scroll;
+}
+.notification_badge {
+    padding: 2px 7px;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 1;
+    color: #333333;
+    text-align: center;
+    white-space: nowrap;
+    background-color: #e8e8e8;
+    vertical-align: baseline;
+    border-radius: 20px;
+    position: absolute;
+    left: 6px;
+    top: -1px;
+}
+.nav-tabs {
+    border-bottom: 2px solid #c2c2c2;
+    padding: 10px;
+}
+.nav-tabs a {
+    padding: 10px 10px;
+    color: #000000;
+    font-size: 17px;
+}
+.nav-tabs a:hover {
+    color: #727171;
+    border-bottom: 5px solid #676767
+}
+.resultDisplayNotification {
+    height: auto;
+    color: #000000;
+    font-size: 13px;
+    border-bottom: 1px solid #aaaaaa;
+}
+.resultDisplayNotification img {
+    height: 50px;
+    border-radius: 5px;
+    margin: 1px 12px 0px 2px;
+    float: left;
+    margin-right:15px;
+}
+.timestamp_smaller {
+    font-size: 85%;
+    margin: 0;
+}
+.search {
+    margin: 8px 0 0 15%;
+}
+.search #search_text_input {
+    border: thin solid #898989;
+    float: left;
+    height: 24px;
+    outline:0;
+    width:110px;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    padding: 10px;
+}
+.button_holder {
+    background-color: #f1f1f1;
+    border: thin solid #898989;
+    cursor: pointer;
+    float: left;
+    height: 24px;
+    width: 35px;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
+}
+.button_holder img {
+    margin-top: 1px;
+    width: 20px;
+    padding: 2px;
+    margin-left: 6px;
 }
