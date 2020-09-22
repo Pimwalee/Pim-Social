@@ -255,18 +255,15 @@ textarea:focus {
     text-align: left;
 }
 .danger {
-    background-color: #bfbfbf;
+    background-color: #b37f7f;
 }
 .warning {
     background-color: #bfbfbf;
 }
 .success {
-    background-color: #bfbfbf;
+    background-color: #a2af96;
 }
 .default {
-    background-color: #bfbfbf;
-}
-.danger {
     background-color: #bfbfbf;
 }
 .info {
@@ -309,14 +306,18 @@ background-color: #949494;
     background-color: #dfdfdf;
     }
 .delete_button {
-    height: 22px;
-    width: 22px;
-    padding:0 0 24 0;
+    color: #606060;
+    height: 18px;
+    width: 18px;
     float: right;
-    border-radius: 6px;
-    right: -20px;
+    border-radius: 5px;
+    right: -30px;
     position: relative;
-    background-color: #d0d0d0;
+    background-color: #f3f3f3;
+    font-size: 18px;
+    border: 1px solid #606060;
+    padding: 0;
+    line-height: 0px;
 }
 .profile_main_column {
     min-width: 675px;
@@ -406,7 +407,7 @@ background-color: #949494;
 }
 .resultDisplay {
     padding: 5px 5px 0 5px;
-    height: 80px;
+    height: 85px;
     border-bottom: 1px solid #D3D3D3;
 }
 .resultDisplay a {
@@ -425,10 +426,12 @@ background-color: #949494;
 .liveSearchText {
     background-color: transparent;
     color: #222222;
+    font-size: 14px;
 }
 .liveSearchText p{
-    margin-left: 10px;
-    font-size: 12px;
+    margin-left: 60px;
+    font-size: 13px;
+    margin-bottom: auto;
 }
 .tab-content {
     margin-top: 25px;
@@ -517,4 +520,46 @@ background-color: #949494;
     width: 20px;
     padding: 2px;
     margin-left: 6px;
+}
+.search_results {
+    background-color: #fff;
+    border: 1px solid #BFBFBF;
+    border-top: none;
+    border-bottom: none;
+    margin-top: 23px;
+}
+.search_results_footer {
+    padding: 2px 4px 0px 4px;
+    height: 30px;
+    border: 1px solid #BFBFBF;
+    border-top: none;
+    background-color: #dbdbdb;
+    text-align: center;
+    font-size: 14px;
+}
+.search_results_footer a {
+    color:#2b2b2b;
+}
+.search_result {
+    padding: 10px;
+    height: 100px;
+}
+.searchPageFriendButtons {
+    float: right;
+}
+.result_profile_pic {
+    float: left;
+    margin-right: 10px;
+}
+#search_hr {
+    margin-bottom: 0px;
+}
+.searchPageFriendButtons input[type="submit"] {
+    border: none;
+    padding: 5px 5px;
+    border-radius: 5px;
+    color: #000000;
+}
+.searchPageFriendButtons input[type="submit"]:hover {
+    border:1px solid #6c6c6c;
 }

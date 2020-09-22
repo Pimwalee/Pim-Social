@@ -31,7 +31,7 @@ class Notification {
         $query = $this->con->query("SELECT * FROM notifications WHERE user_to='$userLoggedIn' ORDER BY id DESC");
 
         if($query->rowCount() == 0) {
-            echo "You have no notifications!";
+            echo "<p style='text-align:center; font-size:13px;'>You have no notifications!</p>";
             return; //End the function
         }
 
