@@ -44,7 +44,10 @@ else {
 
         <div class ="logo">
             <a href="index.php">PimCial!</a>
-            <!-- <img src="assset/images/00000">  if we want to put img logo-->
+            <!-- <a href="index.php">
+            <img src="assets/images/logo/pimcial_logo2.png">
+            </a> -->
+             <!-- if we want to put img logo -->
         </div>
 
         <div class="search">
