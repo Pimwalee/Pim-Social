@@ -111,7 +111,7 @@ else {
                     echo '<span class="notification_badge" id="unread_requests">' . $num_requests .'</span>';
                 ?>
                 </a>
-                <a href="upload.php"><i class="fa fa-cog"></i></a>
+                <a href="settings.php"><i class="fa fa-cog"></i></a>
                 <a href="includes/handlers/logout.php"><i class="fa fa-sign-out"></i></a>
             </nav>
 

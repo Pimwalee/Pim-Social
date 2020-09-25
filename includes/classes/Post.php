@@ -8,15 +8,40 @@ class Post {
         $this->user_obj = new User($con, $user);
     }
 
-    public function submitPost($body, $user_to) {
+    public function submitPost($body, $user_to, $imageName) {
         $body = strip_tags($body); //remove html tags
-
         $body = str_replace('\r\n', '\n', $body);
         $body = nl2br($body);//replace new line\n with line breaks<br>
 
         $check_empty = preg_replace('/\s+/', '', $body); //delete all spaces
 
-        if($check_empty != "") { //if it contains something
+        if($check_empty != "" || $imageName != "") { //if it contains something
+
+            $body_array = preg_split("/\s+/", $body);
+ 
+            foreach($body_array as $key => $value) { //$value is links, $key keeps track number of element in the array
+ 
+                if(strpos($value, "www.youtube.com/watch?v=") !== false) {
+ 
+                /*  From 1 song link looks like
+                            https://www.youtube.com/watch?v=SlPhMPnQ58k
+                        
+                    From playlists link looks like (split to array at &)
+                            https://www.youtube.com/watch?v=SlPhMPnQ58k& [0]list=PL4o29bINVT4EG_y-k5jGoOu3-Am8Nvi10& [1]
+                            index=1 [2]
+                    for playlists links, split to array at & and only use link[0]
+                */
+
+                    $link = preg_split("!&!", $value); 
+                    $value = preg_replace("!watch\?v=!", "embed/", $link[0]);
+
+                    // $value = "<br><iframe width=\'420\' height=\'315\' src=\'" . $value ."\'></iframe><br>";
+                    $value = "<br><iframe width='420' height='315' src='" . $value ."'></iframe><br>";
+                    $body_array[$key] = $value;
+
+                }
+        }
+        $body = implode(" ", $body_array);
 
             //Current date and time
             $date_added = date("Y-m-d H:i:s");
@@ -30,7 +55,7 @@ class Post {
 
             //Insert post
 
-            $query = $this->con->prepare('INSERT INTO posts(id, body, added_by, user_to, date_added, user_closed, deleted, likes) VALUES (NULL, :body, :added_by, :user_to, :date_added, :user_closed, :deleted, :likes)');
+            $query = $this->con->prepare('INSERT INTO posts(id, body, added_by, user_to, date_added, user_closed, deleted, likes, image) VALUES (NULL, :body, :added_by, :user_to, :date_added, :user_closed, :deleted, :likes, :image)');
             $query->bindValue(':body', $body);
             $query->bindValue(':added_by', $added_by);
             $query->bindValue(':user_to', $user_to);
@@ -38,6 +63,7 @@ class Post {
             $query->bindValue(':user_closed', 'no');
             $query->bindValue(':deleted', 'no');
             $query->bindValue(':likes', '0');
+            $query->bindValue(':image', $imageName);
             $query->execute();
 
 
@@ -53,8 +79,83 @@ class Post {
             $num_posts = $this->user_obj->getNumPosts();
             $num_posts++;
             $update_query = $this->con->query("UPDATE users SET num_posts='$num_posts' WHERE username='$added_by'");
-        }
+
+            $stopWords = "a about above across after again against all almost alone along already
+            also although always among am an and another any anybody anyone anything anywhere are 
+            area areas around as ask asked asking asks at away b back backed backing backs be became
+            because become becomes been before began behind being beings best better between big 
+            both but by c came can cannot case cases certain certainly clear clearly come could
+            d did differ different differently do does done down down downed downing downs during
+            e each early either end ended ending ends enough even evenly ever every everybody
+            everyone everything everywhere f face faces fact facts far felt few find finds first
+            for four from full fully further furthered furthering furthers g gave general generally
+            get gets give given gives go going good goods got great greater greatest group grouped
+            grouping groups h had has have having he her here herself high high high higher
+            highest him himself his how however i im if important in interest interested interesting
+            interests into is it its itself j just k keep keeps kind knew know known knows
+            large largely last later latest least less let lets like likely long longer
+            longest m made make making man many may me member members men might more most
+            mostly mr mrs much must my myself n necessary need needed needing needs never
+            new new newer newest next no nobody non noone not nothing now nowhere number
+            numbers o of off often old older oldest on once one only open opened opening
+            opens or order ordered ordering orders other others our out over p part parted
+            parting parts per perhaps place places point pointed pointing points possible
+            present presented presenting presents problem problems put puts q quite r
+            rather really right right room rooms s said same saw say says second seconds
+            see seem seemed seeming seems sees several shall she should show showed
+            showing shows side sides since small smaller smallest so some somebody
+            someone something somewhere state states still still such sure t take
+            taken than that the their them then there therefore these they thing
+            things think thinks this those though thought thoughts three through
+            thus to today together too took toward turn turned turning turns two
+            u under until up upon us use used uses v very w want wanted wanting
+            wants was way ways we well wells went were what when where whether
+            which while who whole whose why will with within without work
+            worked working works would x y year years yet you young younger
+            youngest your yours z lol haha omg hey ill iframe wonder else like 
+            hate sleepy reason for some little yes bye choose";
+
+            //Convert stop words into array - split at white space
+            $stopWords = preg_split("/[\s,]+/", $stopWords);
+
+            //Remove all punctionation
+            $no_punctuation = preg_replace("/[^a-zA-Z 0-9]+/", "", $body);
+
+            //Predict whether user is posting a url. If so, do not check for trending words
+            if(strpos($no_punctuation, "height") === false && strpos($no_punctuation, "width") === false
+            && strpos($no_punctuation, "http") === false && strpos($no_punctuation, "youtube") === false){
+            //Convert users post (with punctuation removed) into array - split at white space
+            $keywords = preg_split("/[\s,]+/", $no_punctuation);
+
+            foreach($stopWords as $value) { //go each word of stopword
+                foreach($keywords as $key => $value2){ //also go each word of post
+                    if(strtolower($value) == strtolower($value2))
+                        $keywords[$key] = ""; //if $value $value2 matches means it found stopword inside,so remove it.
+                }
+            }
+
+            foreach ($keywords as $value) {
+                $this->calculateTrend(ucfirst($value));
+                //each word in the array will go check if it is in trends table already
+            }
+            
+         }
+
     }
+}
+
+public function calculateTrend($term) {
+
+    if($term != '') {
+        $query = $this->con->query("SELECT * FROM trends WHERE title='$term'");
+
+        if($query->rowCount() == 0)
+            $insert_query = $this->con->query("INSERT INTO trends(title,hits) VALUES('$term','1')");
+        else 
+            $insert_query = $this->con->query("UPDATE trends SET hits=hits+1 WHERE title='$term'");
+    }
+
+}
 
     public function loadPostsFriends($data, $limit) { 
 
@@ -80,6 +181,7 @@ class Post {
                     $body = $row['body'];
                     $added_by = $row['added_by'];
                     $date_time = $row['date_added'];
+                    $imagePath = $row['image'];
 
                     //Prepare user_to string so it can be included even if not posted to a user
                     if($row['user_to'] == "none") {
@@ -209,6 +311,15 @@ class Post {
                             }
                         }
                         
+                        if($imagePath != "") {
+                            $imageDiv = "<div class='postedImage'>
+                                            <img src='$imagePath'>
+                                        </div>";
+                        }
+                        else {
+                            $imageDiv = "";
+                        }
+
                         $str .= "<div class='status_post' onClick='javascript:toggle$id()'>
                                     <div class='post_profile_pic'>
                                         <img src='$profile_pic' width='50'>
@@ -221,6 +332,7 @@ class Post {
                                     <div id='post_body'>
                                         $body
                                         <br>
+                                        $imageDiv
                                         <br>
                                     </div>
 

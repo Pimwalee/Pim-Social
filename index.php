@@ -5,9 +5,54 @@ include("includes/header.php");
 
 
 if(isset($_POST['post'])){//if post have been pressed
-    $post = new Post($con, $userLoggedIn);
-    $post->submitPost($_POST['post_text'], 'none');//none cos it's from index page not to anyone
+
+    $uploadOk = 1; //hold status if it is okay to load or not
+    $imageName = $_FILES['fileToUpload']['name'];
+    $errorMessage = "";
+    
+    if($imageName != ""){
+        $targetDir = "assets/images/posts/";
+        $imageName = $targetDir . uniqid() . basename($imageName);
+        $imageFileType = pathinfo($imageName, PATHINFO_EXTENSION);
+        //uniqid() create random str or num to make name unique if some file name are the same
+
+        if($_FILES['fileToUpload']['size'] > 10000000) {
+            $errorMessage = "Sorry your file is too large";
+            $uploadOk = 0;
+        }
+
+        if(strtolower($imageFileType) != "jpeg" && strtolower($imageFileType) != "png" && strtolower($imageFileType) != "jpg" ) {
+            $errorMessage = "Sorry, only jpeg, jpg and png files are allowed";
+            $uploadOk = 0;
+        }
+
+        if($uploadOk) {
+
+            if(move_uploaded_file($_FILES['fileToUpload']['tmp_name'], $imageName)) {
+                //image uploaded okay
+            }
+            else {
+                //image did not upload
+                $uploadOk = 0;
+            }
+        }
+        //tmp_name is a temporary name that gives the file while it's loading
+    }
+    if($uploadOk) {
+        $post = new Post($con, $userLoggedIn);
+        $post->submitPost($_POST['post_text'], 'none', $imageName);
+    }
+    else {
+        echo "<div style='text-align:center;' class='alert alert-danger'>
+                $errorMessage
+            </div>";
+    }
     header("Location: index.php");
+
+
+    // $post = new Post($con, $userLoggedIn);
+    // $post->submitPost($_POST['post_text'], 'none');//none cos it's from index page not to anyone
+    // header("Location: index.php");
 }
 
 ?>
@@ -27,18 +72,42 @@ if(isset($_POST['post'])){//if post have been pressed
     </div>
 
     <div class="main_column column">
-        <form class="post_form" action="index.php" method="POST">
+        <form class="post_form" action="index.php" method="POST" enctype="multipart/form-data">
+            <input type="file" name="fileToUpload" id="fileToUpload">
             <textarea name="post_text" id="post_text" placeholder="What is on your mind, <?php echo $user['first_name'] ?>?"></textarea>
-            <input type="submit" name="post" id="post_button" value="Post">
+            <input type="submit" name="post" id="post_button" value="Post"><hr>
             
-
         </form>
-
 
         <div class="posts_area"></div>
         <img id="loading" src="assets/images/icons/Loading_icon.gif">
 
     </div>
+
+    <div class="user_details column">
+
+        <h4>Popular</h4>
+
+        <div class="trends">
+            <?php
+            $query = $con->query("SELECT * FROM trends ORDER BY hits DESC LIMIT 9");
+
+            foreach($query as $row) { //while($row = $query->fetch(PDO::FETCHBOTH));
+                $word = $row['title'];
+                $word_dot = strlen($word) >= 14 ? "..." : "";
+                $trimmed_word = str_split($word, 14);
+                $trimmed_word = $trimmed_word[0];
+
+                echo "<div style'padding:1px'>";
+                echo $trimmed_word . $word_dot;
+                echo "<br></div>";
+
+            }
+            ?>
+        </div>
+    </div>
+
+
 
     <script>
     var userLoggedIn = '<?php echo $userLoggedIn?>';

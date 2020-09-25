@@ -80,6 +80,7 @@ nav a:hover{
     z-index: -1;
     margin-top: 20px;
     box-shadow: 3px 3px 3px -1px #bfbfbf;
+    color:#262626;
 }
 .user_details {
     width:270px;
@@ -560,6 +561,30 @@ background-color: #949494;
     border-radius: 5px;
     color: #000000;
 }
-.searchPageFriendButtons input[type="submit"]:hover {
-    border:1px solid #6c6c6c;
+.small_profile_pic {
+    height: 55px;
+    margin: 1px 12px 0 2px;
+    float: left;
+}
+#settings_input {
+	border: 1px solid #cccccc;
+    height: 25px;
+    padding: 10px 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 20px;
+    width: 220px;
+}
+.settings_submit {
+    border: none;
+    padding: 5px 5px;
+    border-radius: 5px;
+    color: #000000;
+}
+.postedImage img {
+    max-height: 300px;
+    max-width: 100%;
+    display: block;
+    margin: 5px auto;
 }
